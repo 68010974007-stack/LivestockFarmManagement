@@ -11,16 +11,16 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// 🔄 อัปเดตโครงสร้างตารางเดิมให้อัตโนมัติ (ไวยากรณ์ปรับให้รองรับ SQLite)
+// 🔄 อัปเดตโครงสร้างตารางเดิมให้อัตโนมัติสำหรับ SQLite
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDbContext>();
 
-    // 1. ตรวจสอบและสร้างฐานข้อมูลหากยังไม่มี
+    // 1. ตรวจสอบและสร้างฐานข้อมูลพร้อมตารางทั้งหมดตาม Models หากยังไม่มี
     context.Database.EnsureCreated();
 
-    // 2. สั่งสร้างตาราง UserAccounts หากยังไม่มีในฐานข้อมูลเดิม
+    // 2. สั่งสร้างตาราง UserAccounts หากยังไม่มีในฐานข้อมูล
     context.Database.ExecuteSqlRaw(@"
         CREATE TABLE IF NOT EXISTS UserAccounts (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,7 +32,7 @@ using (var scope = app.Services.CreateScope())
         );
     ");
 
-    // 3. สั่งสร้างตาราง SpeciesBreeds หากยังไม่มีในฐานข้อมูลเดิม
+    // 3. สั่งสร้างตาราง SpeciesBreeds หากยังไม่มีในฐานข้อมูล
     context.Database.ExecuteSqlRaw(@"
         CREATE TABLE IF NOT EXISTS SpeciesBreeds (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,27 +42,24 @@ using (var scope = app.Services.CreateScope())
         );
     ");
 
-    // 4. สั่งเพิ่มคอลัมน์ที่ขาดในตาราง FinancialTransactions
+    // 4. สั่งเพิ่มคอลัมน์ที่ขาดในตาราง FinancialTransactions (ปลอดภัยสำหรับ SQLite)
     try
     {
-        context.Database.ExecuteSqlRaw("ALTER TABLE FinancialTransactions ADD COLUMN Notes TEXT NULL;");
+        context.Database.ExecuteSqlRaw("ALTER TABLE FinancialTransactions ADD COLUMN Notes TEXT;");
     }
-    catch { /* ข้ามหากมีคอลัมน์แล้ว */ }
+    catch { /* ข้ามหากคอลัมน์มีอยู่แล้ว หรือตารางยังไม่ได้สร้าง */ }
 
     try
     {
-        context.Database.ExecuteSqlRaw("ALTER TABLE FinancialTransactions ADD COLUMN CategoryName TEXT NULL;");
+        context.Database.ExecuteSqlRaw("ALTER TABLE FinancialTransactions ADD COLUMN CategoryName TEXT;");
     }
-    catch { /* ข้ามหากมีคอลัมน์แล้ว */ }
+    catch { /* ข้ามหากคอลัมน์มีอยู่แล้ว หรือตารางยังไม่ได้สร้าง */ }
 
     try
     {
-        context.Database.ExecuteSqlRaw("ALTER TABLE FinancialTransactions ADD COLUMN TransactionType TEXT NULL;");
+        context.Database.ExecuteSqlRaw("ALTER TABLE FinancialTransactions ADD COLUMN TransactionType TEXT;");
     }
-    catch { /* ข้ามหากมีคอลัมน์แล้ว */ }
-
-    // 🔒 ปิด Seed Data ไว้ เพื่อรักษาข้อมูลและรูปภาพสัตว์เลี้ยงเดิมไม่ให้โดนรีเซ็ตทับ
-    // DbInitializer.Initialize(context);
+    catch { /* ข้ามหากคอลัมน์มีอยู่แล้ว หรือตารางยังไม่ได้สร้าง */ }
 }
 
 if (!app.Environment.IsDevelopment())
