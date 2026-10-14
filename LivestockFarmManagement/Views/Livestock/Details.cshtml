@@ -1,0 +1,198 @@
+﻿@model LivestockFarmManagement.Models.Livestock
+
+@{
+    ViewData["Title"] = "รายละเอียดสัตว์เลี้ยงและประวัติสุขภาพ/ผสมพันธุ์";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+
+        <!-- Navigation Back Link -->
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <button onclick="history.back()" class="btn btn-sm btn-light border text-success fw-bold shadow-sm rounded-3">
+                <i class="bi bi-arrow-left me-1"></i> ย้อนกลับ
+            </button>
+            <a asp-action="Index" class="text-decoration-none text-muted fs-7">
+                <i class="bi bi-house-door me-1"></i> กลับหน้าแดชบอร์ดหลัก
+            </a>
+        </div>
+
+        <!-- 1. Card ข้อมูลทั่วไปของสัตว์ -->
+        <div class="card card-custom overflow-hidden shadow-sm border-0 mb-4">
+            <div class="position-relative" style="height: 280px;">
+                <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=800" : Model.ImageUrl)"
+                     class="w-100 h-100 object-fit-cover" alt="@Model.Name"
+                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=800';">
+                <span class="position-absolute top-0 start-0 m-3 badge badge-pastel-green px-3 py-2 rounded-pill fs-6 shadow-sm">
+                    @Model.Category
+                </span>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <div>
+                        <h2 class="fw-bold text-dark m-0">@Model.Name</h2>
+                        <span class="text-muted fs-7">รหัสประจำตัว: #@Model.Code</span>
+                    </div>
+                    <span class="badge badge-pastel-blue px-3 py-2 fs-6">
+                        มูลค่าประเมิน @Model.EstimatedValue.ToString("N0") ฿
+                    </span>
+                </div>
+
+                <div class="row g-3 bg-light p-4 rounded-4 mb-4">
+                    <div class="col-6 col-md-4">
+                        <small class="text-muted d-block">สายพันธุ์</small>
+                        <strong class="text-dark">@(Model.Breed ?? "-")</strong>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <small class="text-muted d-block">เพศ</small>
+                        <strong class="text-dark">@(Model.Gender ?? "-")</strong>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <small class="text-muted d-block">น้ำหนัก</small>
+                        <strong class="text-dark">@Model.Weight กก.</strong>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <small class="text-muted d-block">สถานะสุขภาพ</small>
+                        <span class="fw-bold @(Model.HealthStatus == "สมบูรณ์ดี" || Model.HealthStatus == "ปกติ" ? "text-success" : "text-warning")">
+                            @Model.HealthStatus
+                        </span>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <small class="text-muted d-block">โรงเรือน/คอก</small>
+                        <strong class="text-dark">@(Model.PenNumber ?? "-")</strong>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <small class="text-muted d-block">วันเกิด</small>
+                        <strong class="text-dark">@Model.BirthDate.ToString("dd/MM/yyyy")</strong>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <div class="mb-2">
+                        <h6 class="fw-bold text-secondary">บันทึกเพิ่มเติม</h6>
+                        <p class="text-muted bg-white p-3 rounded-3 border fs-7 mb-0">@Model.Notes</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- 2. ระบบบันทึกและประวัติการฉีดวัคซีน / สุขภาพ -->
+        <div class="card card-custom p-4 border-0 shadow-sm mb-4">
+            <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+                <i class="bi bi-shield-plus fs-4 text-success"></i>
+                <h5 class="fw-bold text-dark m-0">1. บันทึกการฉีดวัคซีนและประวัติสุขภาพ (Vaccination Records)</h5>
+            </div>
+
+            <!-- ฟอร์มเพิ่มวัคซีน -->
+            <form asp-action="AddVaccine" method="post" class="row g-3 mb-4 bg-light p-3 rounded-3">
+                <input type="hidden" name="LivestockId" value="@Model.Id" />
+
+                <div class="col-md-4">
+                    <label class="form-label fs-7 fw-bold text-muted">ชื่อวัคซีน/การรักษา</label>
+                    <input type="text" name="VaccineName" class="form-control bg-white" placeholder="เช่น วัคซีนปากเท้าเปื่อย, ถ่ายพยาธิ" required />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fs-7 fw-bold text-muted">วันที่ได้รับ</label>
+                    <input type="date" name="AdministeredDate" class="form-control bg-white" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fs-7 fw-bold text-muted">นัดหมายครั้งถัดไป</label>
+                    <input type="date" name="NextDueDate" class="form-control bg-white" value="@DateTime.Now.AddMonths(6).ToString("yyyy-MM-dd")" required />
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-pastel-primary w-100 fw-bold">
+                        <i class="bi bi-plus-lg me-1"></i> บันทึกวัคซีน
+                    </button>
+                </div>
+            </form>
+
+            <!-- ตารางรายการวัคซีน -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ชื่อวัคซีน/การรักษา</th>
+                            <th>วันที่ได้รับ</th>
+                            <th>นัดหมายครั้งถัดไป</th>
+                            <th>สถานะ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.VaccineRecords != null && Model.VaccineRecords.Any())
+                        {
+                            @foreach (var vac in Model.VaccineRecords)
+                            {
+                                <tr>
+                                    <td class="fw-bold text-dark">@vac.VaccineName</td>
+                                    <td>@vac.AdministeredDate.ToString("dd/MM/yyyy")</td>
+                                    <td class="text-primary fw-bold">@vac.NextDueDate.ToString("dd/MM/yyyy")</td>
+                                    <td><span class="badge bg-success">ฉีดเรียบร้อย</span></td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-3">ยังไม่มีประวัติการฉีดวัคซีน กรอกข้อมูลในฟอร์มด้านบนเพื่อเริ่มบันทึกได้เลยครับ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. ระบบบันทึกประวัติการผสมพันธุ์และการคาดการณ์วันคลอด -->
+        <div class="card card-custom p-4 border-0 shadow-sm mb-4">
+            <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+                <i class="bi bi-heart-pulse fs-4 text-danger"></i>
+                <h5 class="fw-bold text-dark m-0">2. ประวัติการผสมพันธุ์และการคาดการณ์วันคลอด (Breeding Records)</h5>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>สายพันธุ์พ่อพันธุ์</th>
+                            <th>วันที่ผสมพันธุ์</th>
+                            <th>คาดการณ์วันคลอด</th>
+                            <th>สถานะ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.BreedingRecords != null && Model.BreedingRecords.Any())
+                        {
+                            @foreach (var breed in Model.BreedingRecords)
+                            {
+                                <tr>
+                                    <td class="fw-bold text-dark">@breed.FatherBreed</td>
+                                    <td>@breed.MatingDate.ToString("dd/MM/yyyy")</td>
+                                    <td class="text-danger fw-bold">@breed.ExpectedBirthDate.ToString("dd/MM/yyyy")</td>
+                                    <td><span class="badge bg-warning text-dark">@breed.Status</span></td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-3">ยังไม่มีบันทึกประวัติการผสมพันธุ์สำหรับสัตว์ตัวนี้</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Action Buttons ด้านล่างสุด -->
+        <div class="d-flex gap-2 mb-5">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning text-white flex-grow-1 fw-bold py-2.5 rounded-3">
+                <i class="bi bi-pencil me-1"></i> แก้ไขข้อมูลสัตว์
+            </a>
+            <button onclick="history.back()" class="btn btn-light border flex-grow-1 fw-bold text-secondary py-2.5 rounded-3">
+                <i class="bi bi-arrow-left me-1"></i> ย้อนกลับ
+            </button>
+        </div>
+
+    </div>
+</div>

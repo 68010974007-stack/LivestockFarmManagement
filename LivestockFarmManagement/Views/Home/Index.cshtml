@@ -1,0 +1,80 @@
+﻿@{
+    ViewData["Title"] = "ยินดีต้อนรับสู่ฟาร์มปศุสัตว์อัจฉริยะ";
+}
+
+<!-- Hero Banner Section -->
+<div class="row align-items-center py-5 g-5">
+    <div class="col-lg-6 text-center text-lg-start">
+        <span class="badge badge-pastel-green px-3 py-2 rounded-pill mb-3">
+            <i class="bi bi-stars me-1"></i> Smart Livestock Management Platform
+        </span>
+        <h1 class="display-4 fw-bold text-success mb-3">
+            ยกระดับการจัดการฟาร์มปศุสัตว์ อย่างมืออาชีพ
+        </h1>
+        <p class="lead text-muted mb-4">
+            ระบบติดตามสุขภาพ ประวัติการฉีดวัคซีน และการประเมินมูลค่าสัตว์เลี้ยงแบบเรียลไทม์ ครอบคลุมปศุสัตว์ทุกประเภท ครบจบในที่เดียว
+        </p>
+
+        <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+            <a asp-controller="Livestock" asp-action="Index" class="btn btn-pastel-primary btn-lg px-4 py-3 shadow-sm">
+                <i class="bi bi-speedometer2 me-2"></i> เข้าสู่แดชบอร์ดฟาร์ม
+            </a>
+            <a asp-controller="Livestock" asp-action="Create" class="btn btn-light btn-lg px-4 py-3 border fw-bold text-success shadow-sm">
+                <i class="bi bi-plus-circle me-2"></i> ลงทะเบียนสัตว์ใหม่
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="position-relative">
+            <img src="https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=800"
+                 class="img-fluid rounded-4 shadow-lg border border-4 border-white" alt="Farm Banner">
+
+            <div class="position-absolute bottom-0 start-0 m-4 p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-3 border">
+                <div class="rounded-circle bg-success text-white p-3 d-flex align-items-center justify-content-center" style="width:45px; height:45px;">
+                    <i class="bi bi-check-lg fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold m-0">100% Digital Farm</h6>
+                    <small class="text-muted">บริหารจัดการง่าย ได้มาตรฐาน</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row g-4 py-5 border-top">
+    <div class="col-md-4">
+        <div class="card card-custom p-4 h-100 text-center">
+            <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+                 style="width:60px; height:60px; background-color: var(--pastel-green-light); color: var(--pastel-green-primary);">
+                <i class="bi bi-heart-pulse fs-3"></i>
+            </div>
+            <h5 class="fw-bold">ติดตามสุขภาพแม่นยำ</h5>
+            <p class="text-muted fs-7 mb-0">บันทึกประวัติสุขภาพ แยกคอกเฝ้าระวัง และกำหนดวันรับวัคซีนล่วงหน้า</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card card-custom p-4 h-100 text-center">
+            <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+                 style="width:60px; height:60px; background-color: #e0f2f1; color: #00796b;">
+                <i class="bi bi-graph-up-arrow fs-3"></i>
+            </div>
+            <h5 class="fw-bold">ประเมินมูลค่าฟาร์ม</h5>
+            <p class="text-muted fs-7 mb-0">คำนวณมูลค่ารวมอัตโนมัติตามสายพันธุ์ น้ำหนัก และสถิติปศุสัตว์</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card card-custom p-4 h-100 text-center">
+            <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+                 style="width:60px; height:60px; background-color: #fff8e1; color: #f57f17;">
+                <i class="bi bi-grid-3x3-gap fs-3"></i>
+            </div>
+            <h5 class="fw-bold">รองรับปศุสัตว์ทุกประเภท</h5>
+            <p class="text-muted fs-7 mb-0">รองรับทั้ง โคนม โคเนื้อ สุกร แพะ แกะ และสัตว์ปีก อย่างเป็นหมวดหมู่</p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,113 @@
+﻿@model LivestockFarmManagement.Models.Livestock
+
+@{
+    ViewData["Title"] = "แก้ไขข้อมูลสัตว์เลี้ยง";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+        <!-- 🔙 ปุ่มย้อนกลับมุมซ้ายบน -->
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <button onclick="history.back()" class="btn btn-sm btn-light border text-success fw-bold shadow-sm rounded-3">
+                <i class="bi bi-arrow-left me-1"></i> ย้อนกลับ
+            </button>
+            <a asp-action="Index" class="text-decoration-none text-muted fs-7">
+                <i class="bi bi-house-door me-1"></i> กลับหน้าแดชบอร์ดหลัก
+            </a>
+        </div>
+
+        <div class="card card-custom p-4 p-md-5 border-0 shadow-sm">
+            <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-warning"
+                     style="width: 50px; height: 50px; background-color: var(--pastel-amber);">
+                    <i class="bi bi-pencil-square fs-3"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold text-dark m-0">แก้ไขข้อมูลสัตว์เลี้ยง</h3>
+                    <p class="text-muted fs-7 m-0">ปรับปรุงข้อมูลของ #@Model.Code (@Model.Name)</p>
+                </div>
+            </div>
+
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Code" class="form-label fw-bold text-secondary fs-7">รหัสสัตว์ (Code)</label>
+                        <input asp-for="Code" class="form-control bg-light" required />
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Name" class="form-label fw-bold text-secondary fs-7">ชื่อสัตว์</label>
+                        <input asp-for="Name" class="form-control bg-light" required />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Category" class="form-label fw-bold text-secondary fs-7">หมวดหมู่/ประเภท</label>
+                        <select asp-for="Category" class="form-select bg-light">
+                            <option value="โคนม">โคนม</option>
+                            <option value="โคเนื้อ">โคเนื้อ</option>
+                            <option value="สุกร">สุกร</option>
+                            <option value="แพะ/แกะ">แพะ/แกะ</option>
+                            <option value="สัตว์ปีก">สัตว์ปีก</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Breed" class="form-label fw-bold text-secondary fs-7">สายพันธุ์</label>
+                        <input asp-for="Breed" class="form-control bg-light" />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-4">
+                        <label asp-for="Weight" class="form-label fw-bold text-secondary fs-7">น้ำหนัก (กก.)</label>
+                        <input asp-for="Weight" type="number" step="0.01" class="form-control bg-light" required />
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label asp-for="Gender" class="form-label fw-bold text-secondary fs-7">เพศ</label>
+                        <select asp-for="Gender" class="form-select bg-light">
+                            <option value="เมีย">เมีย</option>
+                            <option value="ผู้">ผู้</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label asp-for="HealthStatus" class="form-label fw-bold text-secondary fs-7">สถานะสุขภาพ</label>
+                        <input asp-for="HealthStatus" class="form-control bg-light" />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label asp-for="PenNumber" class="form-label fw-bold text-secondary fs-7">หมายเลขคอก/โรงเรือน</label>
+                        <input asp-for="PenNumber" class="form-control bg-light" />
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label asp-for="EstimatedValue" class="form-label fw-bold text-secondary fs-7">ประเมินมูลค่า (บาท)</label>
+                        <input asp-for="EstimatedValue" type="number" step="0.01" class="form-control bg-light" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ImageUrl" class="form-label fw-bold text-secondary fs-7">URL รูปภาพ</label>
+                    <input asp-for="ImageUrl" class="form-control bg-light" />
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Notes" class="form-label fw-bold text-secondary fs-7">บันทึกเพิ่มเติม</label>
+                    <textarea asp-for="Notes" class="form-control bg-light" rows="3"></textarea>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-3 pt-3 border-top">
+                    <button type="submit" class="btn btn-warning text-white flex-grow-1 py-2.5 rounded-3 fw-bold">
+                        <i class="bi bi-check-circle me-1"></i> บันทึกการแก้ไข
+                    </button>
+                    <button type="button" onclick="history.back()" class="btn btn-light border flex-grow-1 py-2.5 rounded-3 fw-bold text-secondary">
+                        <i class="bi bi-arrow-left me-1"></i> ยกเลิก / ย้อนกลับ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

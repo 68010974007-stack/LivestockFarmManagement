@@ -1,0 +1,91 @@
+﻿@model IEnumerable<LivestockFarmManagement.Models.SpeciesBreed>
+@{
+    ViewData["Title"] = "จัดการประเภท & สายพันธุ์ - Admin";
+}
+
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-success m-0"><i class="bi bi-tags-fill me-2"></i>จัดการประเภท & สายพันธุ์ (Species & Breed Master Data)</h3>
+            <small class="text-muted">กำหนดข้อมูลหมวดหมู่สัตว์เลี้ยง และระยะเวลาตั้งท้องมาตรฐานเพื่อคำนวณวันคลอดอัตโนมัติ</small>
+        </div>
+        <a asp-action="Index" class="btn btn-light border text-secondary fw-bold rounded-pill"><i class="bi bi-arrow-left me-1"></i> กลับหน้า Admin</a>
+    </div>
+
+    <div class="row g-4">
+        <!-- ฟอร์มเพิ่มสายพันธุ์ใหม่ -->
+        <div class="col-md-4">
+            <div class="card card-custom p-4 border-0 shadow-sm">
+                <h5 class="fw-bold text-success mb-3"><i class="bi bi-plus-circle-fill me-2"></i>เพิ่มสายพันธุ์ใหม่</h5>
+                <form asp-action="CreateSpeciesBreed" method="post">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">ประเภทสัตว์ (Category)</label>
+                        <select name="Category" class="form-select rounded-3" required>
+                            <option value="วัว">วัว</option>
+                            <option value="หมู">หมู</option>
+                            <option value="แพะ">แพะ</option>
+                            <option value="แกะ">แกะ</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">ชื่อสายพันธุ์ (Breed Name)</label>
+                        <input name="BreedName" class="form-control rounded-3" placeholder="เช่น บราห์มัน, ลาร์จไวท์" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">ระยะเวลาตั้งท้อง (วัน)</label>
+                        <input name="GestationDays" type="number" class="form-control rounded-3" value="283" required />
+                        <small class="text-muted fs-7">*วัว ~283 วัน, หมู ~114 วัน, แพะ/แกะ ~150 วัน</small>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 fw-bold rounded-pill py-2"><i class="bi bi-check-circle me-1"></i> บันทึกสายพันธุ์</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ตารางแสดงรายการสายพันธุ์ -->
+        <div class="col-md-8">
+            <div class="card card-custom p-4 border-0 shadow-sm">
+                <h5 class="fw-bold text-secondary mb-3">รายการประเภทและสายพันธุ์ทั้งหมด</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>ประเภทสัตว์</th>
+                                <th>สายพันธุ์</th>
+                                <th>ระยะเวลาตั้งท้อง (วัน)</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                int index = 1;
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@(index++)</td>
+                                        <td><span class="badge bg-success">@item.Category</span></td>
+                                        <td class="fw-bold">@item.BreedName</td>
+                                        <td>@item.GestationDays วัน</td>
+                                        <td>
+                                            <a asp-action="DeleteSpeciesBreed" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm rounded-pill" onclick="return confirm('ยืนยันการลบรายการนี้?');">
+                                                <i class="bi bi-trash"></i> ลบ
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">ยังไม่มีข้อมูลสายพันธุ์ในระบบ</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,110 @@
+﻿@model IEnumerable<LivestockFarmManagement.Models.BreedingRecord>
+
+@{
+    ViewData["Title"] = "บันทึกการผสมพันธุ์และคาดการณ์วันคลอด";
+    var livestockList = ViewBag.LivestockList as List<LivestockFarmManagement.Models.Livestock>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-success"><i class="fa-solid fa-baby me-2"></i>บันทึกการผสมพันธุ์ & คาดการณ์วันคลอด</h2>
+    <button class="btn btn-success rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#addBreedingModal">
+        <i class="fa-solid fa-plus me-1"></i> เพิ่มบันทึกการผสมพันธุ์
+    </button>
+</div>
+
+<!-- ตารางแสดงรายการ -->
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4">รหัสแม่พันธุ์ / Tag</th>
+                    <th>ประเภท</th>
+                    <th>พ่อพันธุ์ (Tag/สายพันธุ์)</th>
+                    <th>วันที่ผสมพันธุ์</th>
+                    <th>คาดการณ์วันคลอด</th>
+                    <th>สถานะ</th>
+                    <th class="text-center">การจัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        var animal = livestockList?.FirstOrDefault(l => l.Id == item.LivestockId);
+                        <tr>
+                            <td class="ps-4">
+                                <strong>@(animal != null ? animal.TagNumber : $"ID: {item.LivestockId}")</strong>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">@(animal?.Category ?? "-")</span></td>
+                            <td>@item.ParentTag</td>
+                            <td>@item.MateDate.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <span class="badge bg-warning text-dark fs-6 px-3 py-2 rounded-pill shadow-sm">
+                                    <i class="fa-regular fa-calendar-check me-1"></i> @item.DueDate.ToString("dd/MM/yyyy")
+                                </span>
+                            </td>
+                            <td><span class="badge bg-info text-dark rounded-pill">@item.Status</span></td>
+                            <td class="text-center">
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm rounded-circle" onclick="return confirm('ยืนยันการลบประวัตินี้?');">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fa-solid fa-folder-open fa-2x mb-2 d-block"></i>
+                            ยังไม่มีข้อมูลประวัติการผสมพันธุ์
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal สำหรับเพิ่มข้อมูล -->
+<div class="modal fade" id="addBreedingModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <form asp-action="Create" method="post">
+                <div class="modal-header bg-success text-white rounded-top-4">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-heart me-2"></i>บันทึกการผสมพันธุ์ใหม่</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">เลือกแม่พันธุ์</label>
+                        <select name="livestockId" class="form-select rounded-3" required>
+                            <option value="">-- เลือกรายการสัตว์ --</option>
+                            @if (livestockList != null)
+                            {
+                                foreach (var animal in livestockList)
+                                {
+                                    <option value="@animal.Id">@animal.TagNumber (@animal.Category - @animal.Breed)</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">วันที่ผสมพันธุ์</label>
+                        <input type="date" name="mateDate" class="form-control rounded-3" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">หมายเลขพ่อพันธุ์ / สายพันธุ์พ่อ</label>
+                        <input type="text" name="parentTag" class="form-control rounded-3" placeholder="เช่น BULL-001 หรือ พันธุ์บราห์มัน" />
+                    </div>
+                </div>
+                <div class="modal-footer bg-light rounded-bottom-4">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-success rounded-pill px-4">บันทึกข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

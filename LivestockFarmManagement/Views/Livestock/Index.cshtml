@@ -1,0 +1,246 @@
+﻿@model IEnumerable<LivestockFarmManagement.Models.Livestock>
+
+@{
+    ViewData["Title"] = "แดชบอร์ดฟาร์มสดใส";
+    var totalCount = Model.Count();
+    var healthyCount = Model.Count(x => x.HealthStatus == "สมบูรณ์ดี" || x.HealthStatus == "ปกติ");
+    var sickCount = Model.Count(x => x.HealthStatus != "สมบูรณ์ดี" && x.HealthStatus != "ปกติ");
+    var totalValue = Model.Sum(x => x.EstimatedValue);
+
+    var categoryData = Model.GroupBy(x => x.Category)
+                            .Select(g => new { Category = g.Key, Count = g.Count() }).ToList();
+}
+
+<!-- 📊 STAT CARDS BOOTSTRAP -->
+<div class="row g-4 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card card-custom p-3" style="background-color: #e8f5e9;">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <span class="text-muted fw-medium fs-7">สัตว์เลี้ยงทั้งหมด</span>
+                    <h2 class="fw-bold text-success my-1">@totalCount <small class="fs-6 fw-normal text-muted">ตัว</small></h2>
+                    <span class="badge badge-pastel-green rounded-pill">100% ครอบคลุมฟาร์ม</span>
+                </div>
+                <div class="rounded-3 p-3 bg-white text-success shadow-sm">
+                    <i class="bi bi-box-seam fs-4"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card card-custom p-3" style="background-color: #e0f2f1;">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <span class="text-muted fw-medium fs-7">สุขภาพปกติ</span>
+                    <h2 class="fw-bold text-teal my-1" style="color: #00796b;">@healthyCount <small class="fs-6 fw-normal text-muted">ตัว</small></h2>
+                    <span class="badge badge-pastel-blue rounded-pill">พร้อมให้ผลผลิต</span>
+                </div>
+                <div class="rounded-3 p-3 bg-white text-teal shadow-sm" style="color: #00796b;">
+                    <i class="bi bi-heart-pulse fs-4"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card card-custom p-3" style="background-color: #fff8e1;">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <span class="text-muted fw-medium fs-7">ต้องเฝ้าระวัง / ป่วย</span>
+                    <h2 class="fw-bold text-warning my-1" style="color: #f57f17;">@sickCount <small class="fs-6 fw-normal text-muted">ตัว</small></h2>
+                    <span class="badge badge-pastel-amber rounded-pill">แยกคอกดูแลพิเศษ</span>
+                </div>
+                <div class="rounded-3 p-3 bg-white text-warning shadow-sm" style="color: #f57f17;">
+                    <i class="bi bi-exclamation-triangle fs-4"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card card-custom p-3" style="background-color: #e3f2fd;">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <span class="text-muted fw-medium fs-7">มูลค่าฟาร์มรวม</span>
+                    <h2 class="fw-bold text-primary my-1">@totalValue.ToString("N0") <small class="fs-6 fw-normal">฿</small></h2>
+                    <span class="badge badge-pastel-blue rounded-pill">ประเมินมูลค่ารวม</span>
+                </div>
+                <div class="rounded-3 p-3 bg-white text-primary shadow-sm">
+                    <i class="bi bi-cash-coin fs-4"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 📈 CHARTS ROW -->
+<div class="row g-4 mb-4">
+    <div class="col-12 col-lg-6">
+        <div class="card card-custom p-4 h-100">
+            <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-pie-chart-fill me-2 text-success"></i>สัดส่วนประเภทสัตว์เลี้ยง</h6>
+            <div style="height: 240px;" class="d-flex justify-content-center">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-6">
+        <div class="card card-custom p-4 h-100">
+            <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-bar-chart-line-fill me-2 text-success"></i>รายงานสุขภาพสัตว์เลี้ยง</h6>
+            <div style="height: 240px;">
+                <canvas id="healthChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🔍 SEARCH BAR -->
+<div class="card card-custom p-3 mb-4">
+    <div class="row align-items-center g-3">
+        <div class="col-12 col-md-6">
+            <h5 class="fw-bold m-0 text-success"><i class="bi bi-grid-fill me-2"></i>รายการสัตว์เลี้ยงทั้งหมด</h5>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="searchInput" onkeyup="filterCards()" class="form-control bg-light border-0" placeholder="พิมพ์เพื่อค้นหา (ชื่อ, รหัส, หมวดหมู่)...">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🎴 ANIMAL CARDS GRID -->
+<div class="row g-4" id="cardsContainer">
+    @if (!Model.Any())
+    {
+        <div class="col-12 text-center py-5">
+            <p class="text-muted fs-5">ยังไม่มีข้อมูลสัตว์เลี้ยง กดปุ่มเพิ่มข้อมูลด้านบนได้เลยครับ</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var item in Model)
+        {
+            <div class="col-12 col-md-6 col-lg-4 animal-card" data-name="@item.Name" data-code="@item.Code" data-category="@item.Category">
+                <div class="card card-custom h-100 overflow-hidden shadow-sm">
+                    <!-- Image Box -->
+                    <div class="position-relative bg-light" style="height: 220px; overflow: hidden;">
+                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=800" : item.ImageUrl)"
+                             class="w-100 h-100 object-fit-cover"
+                             alt="@item.Name"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=800';">
+
+                        <span class="position-absolute top-0 start-0 m-3 badge badge-pastel-green px-3 py-2 rounded-pill shadow-sm">
+                            @item.Category
+                        </span>
+                        <span class="position-absolute top-0 end-0 m-3 badge bg-white text-dark shadow-sm">
+                            #@item.Code
+                        </span>
+                    </div>
+
+                    <!-- Details Box -->
+                    <div class="card-body p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="fw-bold text-dark m-0">@item.Name</h4>
+                                <span class="text-success fw-bold fs-6">@item.EstimatedValue.ToString("N0") ฿</span>
+                            </div>
+
+                            <div class="bg-light p-3 rounded-3 mb-3 fs-7 text-muted">
+                                <div class="row g-2">
+                                    <div class="col-6"><strong>สายพันธุ์:</strong> @(item.Breed ?? "-")</div>
+                                    <div class="col-6"><strong>น้ำหนัก:</strong> @item.Weight กก.</div>
+                                    <div class="col-6"><strong>คอก/โรงเรือน:</strong> @(item.PenNumber ?? "-")</div>
+                                    <div class="col-6">
+                                        <strong>สุขภาพ:</strong>
+                                        <span class="fw-bold @(item.HealthStatus == "สมบูรณ์ดี" || item.HealthStatus == "ปกติ" ? "text-success" : "text-warning")">
+                                            @item.HealthStatus
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons (เพิ่มปุ่มวัคซีน/สุขภาพ) -->
+                        <div class="d-flex flex-wrap gap-2 pt-2 border-top">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-light flex-grow-1 fw-bold">
+                                <i class="bi bi-info-circle me-1"></i> รายละเอียด
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-success flex-grow-1 fw-bold">
+                                <i class="bi bi-shield-plus me-1"></i> วัคซีน/สุขภาพ
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning text-white fw-bold">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger fw-bold">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // กราฟวงกลม สัดส่วนประเภทสัตว์
+        const catLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(categoryData.Select(x => x.Category)));
+        const catCounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(categoryData.Select(x => x.Count)));
+
+        new Chart(document.getElementById('categoryChart'), {
+            type: 'doughnut',
+            data: {
+                labels: catLabels,
+                datasets: [{
+                    data: catCounts,
+                    backgroundColor: ['#a5d6a7', '#80cbc4', '#ffe082', '#80deea', '#ce93d8']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // กราฟแท่ง รายงานสุขภาพ
+        new Chart(document.getElementById('healthChart'), {
+            type: 'bar',
+            data: {
+                labels: ['สุขภาพดี/ปกติ', 'เฝ้าระวัง/ป่วย'],
+                datasets: [{
+                    label: 'จำนวน (ตัว)',
+                    data: [@healthyCount, @sickCount],
+                    backgroundColor: ['#81c784', '#ffb74d'],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // ฟังก์ชัน ค้นหาการ์ด
+        function filterCards() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.animal-card');
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name').toLowerCase();
+                const code = card.getAttribute('data-code').toLowerCase();
+                const category = card.getAttribute('data-category').toLowerCase();
+
+                if (name.includes(query) || code.includes(query) || category.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+}

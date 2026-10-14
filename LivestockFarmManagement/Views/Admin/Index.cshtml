@@ -1,0 +1,124 @@
+﻿@{
+    ViewData["Title"] = "แดชบอร์ดผู้ดูแลระบบ - Fresh Farm Management";
+}
+
+<div class="container py-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-success m-0"><i class="bi bi-shield-lock-fill me-2"></i>ระบบจัดการผู้ดูแลระบบ (Admin Center)</h3>
+            <small class="text-muted">ภาพรวมและตั้งค่าข้อมูลหลักของฟาร์มปศุสัตว์สดใส</small>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Users" class="btn btn-outline-success fw-bold shadow-sm rounded-pill px-3">
+                <i class="bi bi-people-fill me-1"></i> จัดการผู้ใช้งาน
+            </a>
+            <a asp-action="SpeciesBreeds" class="btn btn-success fw-bold shadow-sm rounded-pill px-3">
+                <i class="bi bi-tags-fill me-1"></i> จัดการประเภท & สายพันธุ์
+            </a>
+        </div>
+    </div>
+
+    <!-- 1. การ์ดสรุปจำนวนข้อมูลหลัก (Stat Cards) -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card card-custom p-3 border-0 shadow-sm" style="background-color: #e8f5e9;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted d-block small fw-bold">สัตว์เลี้ยงทั้งหมด</span>
+                        <h2 class="fw-bold text-success mb-0">@ViewBag.TotalLivestocks <small class="fs-6 text-muted">ตัว</small></h2>
+                    </div>
+                    <div class="rounded-circle bg-white p-3 text-success shadow-sm">
+                        <i class="bi bi-box-seam fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-custom p-3 border-0 shadow-sm" style="background-color: #e3f2fd;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted d-block small fw-bold">ผู้ใช้งานในระบบ</span>
+                        <h2 class="fw-bold text-primary mb-0">@ViewBag.TotalUsers <small class="fs-6 text-muted">คน</small></h2>
+                    </div>
+                    <div class="rounded-circle bg-white p-3 text-primary shadow-sm">
+                        <i class="bi bi-person-badge fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-custom p-3 border-0 shadow-sm" style="background-color: #fff3cd;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted d-block small fw-bold">ประวัติการผสมพันธุ์</span>
+                        <h2 class="fw-bold text-warning mb-0">@ViewBag.TotalBreeding <small class="fs-6 text-muted">รายการ</small></h2>
+                    </div>
+                    <div class="rounded-circle bg-white p-3 text-warning shadow-sm">
+                        <i class="bi bi-heart-pulse fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-custom p-3 border-0 shadow-sm" style="background-color: #f8d7da;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted d-block small fw-bold">ประวัติฉีดวัคซีน/สุขภาพ</span>
+                        <h2 class="fw-bold text-danger mb-0">@ViewBag.TotalVaccines <small class="fs-6 text-muted">รายการ</small></h2>
+                    </div>
+                    <div class="rounded-circle bg-white p-3 text-danger shadow-sm">
+                        <i class="bi bi-capsule fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- สรุปยอดทางการเงินรวมทั้งระบบ -->
+    <div class="card card-custom p-4 border-0 shadow-sm mb-4">
+        <h5 class="fw-bold text-success mb-3"><i class="bi bi-cash-stack me-2"></i>สรุปการเงินภาพรวมทั้งระบบ</h5>
+        <div class="row text-center">
+            <div class="col-md-6 border-end py-2">
+                <span class="text-muted d-block small">รายรับรวมทั้งหมด</span>
+                <h3 class="fw-bold text-success mb-0">฿@ViewBag.TotalIncome.ToString("N2")</h3>
+            </div>
+            <div class="col-md-6 py-2">
+                <span class="text-muted d-block small">รายจ่ายรวมทั้งหมด</span>
+                <h3 class="fw-bold text-danger mb-0">฿@ViewBag.TotalExpense.ToString("N2")</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- เมนูลัดการจัดการระบบ -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card card-custom p-4 border-0 shadow-sm h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="rounded-circle bg-success text-white p-3 fs-4">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold m-0">1. ระบบจัดการผู้ใช้งาน (User Management)</h5>
+                        <small class="text-muted">เพิ่ม ลบ และกำหนดสิทธิ์การใช้งานของพนักงานในฟาร์ม</small>
+                    </div>
+                </div>
+                <a asp-action="Users" class="btn btn-outline-success mt-auto rounded-pill fw-bold">เข้าสู่ระบบจัดการผู้ใช้ ➔</a>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card card-custom p-4 border-0 shadow-sm h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="rounded-circle bg-primary text-white p-3 fs-4">
+                        <i class="bi bi-tags"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold m-0">2. ระบบจัดการประเภท & สายพันธุ์ (Master Data)</h5>
+                        <small class="text-muted">เพิ่มประเภทสัตว์ สายพันธุ์ และกำหนดระยะเวลาตั้งท้องมาตรฐาน</small>
+                    </div>
+                </div>
+                <a asp-action="SpeciesBreeds" class="btn btn-outline-primary mt-auto rounded-pill fw-bold">เข้าสู่ระบบจัดการสายพันธุ์ ➔</a>
+            </div>
+        </div>
+    </div>
+</div>

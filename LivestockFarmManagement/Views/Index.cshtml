@@ -1,0 +1,126 @@
+﻿@model IEnumerable<LivestockFarmManagement.Models.Livestock>
+@{
+    ViewData["Title"] = "รายการสัตว์เลี้ยงทั้งหมด";
+}
+
+<!-- Summary Statistics Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-2xl p-5 border border-emerald-100 shadow-sm flex items-center justify-between">
+        <div>
+            <p class="text-sm font-medium text-slate-500">สัตว์เลี้ยงทั้งหมด</p>
+            <h3 class="text-3xl font-bold text-emerald-700 mt-1">@ViewBag.TotalCount <span class="text-base font-normal text-slate-500">ตัว</span></h3>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl">🐄</div>
+    </div>
+    <div class="bg-white rounded-2xl p-5 border border-emerald-100 shadow-sm flex items-center justify-between">
+        <div>
+            <p class="text-sm font-medium text-slate-500">สุขภาพสมบูรณ์ดี</p>
+            <h3 class="text-3xl font-bold text-green-600 mt-1">@ViewBag.HealthyCount <span class="text-base font-normal text-slate-500">ตัว</span></h3>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-2xl">💚</div>
+    </div>
+    <div class="bg-white rounded-2xl p-5 border border-emerald-100 shadow-sm flex items-center justify-between">
+        <div>
+            <p class="text-sm font-medium text-slate-500">เฝ้าระวัง / ป่วย</p>
+            <h3 class="text-3xl font-bold text-amber-600 mt-1">@ViewBag.SickCount <span class="text-base font-normal text-slate-500">ตัว</span></h3>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl">💊</div>
+    </div>
+    <div class="bg-white rounded-2xl p-5 border border-emerald-100 shadow-sm flex items-center justify-between">
+        <div>
+            <p class="text-sm font-medium text-slate-500">มูลค่าฟาร์มประเมิน</p>
+            <h3 class="text-2xl font-bold text-emerald-800 mt-1">@string.Format("{0:N0}", ViewBag.TotalValue) <span class="text-base font-normal text-slate-500">฿</span></h3>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl">💰</div>
+    </div>
+</div>
+
+<!-- Search & Filter Controls -->
+<div class="bg-white rounded-2xl p-4 shadow-sm border border-emerald-100 mb-6">
+    <form asp-action="Index" method="get" class="flex flex-col md:flex-row gap-3">
+        <div class="flex-grow relative">
+            <input type="text" name="searchString" value="@ViewData["CurrentSearch"]" placeholder="ค้นหารหัส, ชื่อสัตว์, หรือสายพันธุ์..."
+                   class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50" />
+            <span class="absolute left-3 top-3 text-slate-400">🔍</span>
+        </div>
+        <div class="w-full md:w-48">
+            <select name="categoryFilter" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50">
+                <option value="ทั้งหมด">หมวดหมู่ทั้งหมด</option>
+                <option value="โคเนื้อ">โคเนื้อ</option>
+                <option value="โคนม">โคนม</option>
+                <option value="สุกร">สุกร (หมู)</option>
+                <option value="สัตว์ปีก">สัตว์ปีก (ไก่/เป็ด)</option>
+                <option value="แพะ/แกะ">แพะ / แกะ</option>
+                <option value="กระบือ">กระบือ (ควาย)</option>
+                <option value="ม้า">ม้า</option>
+            </select>
+        </div>
+        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-medium shadow-sm transition">
+            ค้นหา
+        </button>
+    </form>
+</div>
+
+<!-- Livestock Grid Display -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @foreach (var item in Model)
+    {
+        <div class="bg-white rounded-2xl overflow-hidden border border-emerald-100 shadow-sm hover:shadow-md transition group flex flex-col">
+            <div class="relative h-48 bg-slate-100 overflow-hidden">
+                <img src="@item.ImageUrl" alt="@item.Name" class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1546445317-29f4545f9d52?w=600';" />
+                <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-emerald-800 shadow-sm">
+                    @item.Category
+                </span>
+                <span class="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold shadow-sm @(item.HealthStatus == "สมบูรณ์ดี" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800")">
+                    @item.HealthStatus
+                </span>
+            </div>
+
+            <div class="p-5 flex-grow flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs font-bold text-amber-600 tracking-wide uppercase">@item.Code</span>
+                            <h2 class="text-xl font-bold text-slate-800 mt-0.5">@item.Name</h2>
+                        </div>
+                        <span class="text-sm font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">@item.Gender</span>
+                    </div>
+
+                    <p class="text-sm text-slate-600 mt-2 line-clamp-1"><span class="font-medium">สายพันธุ์:</span> @item.Breed</p>
+
+                    <div class="grid grid-cols-2 gap-2 mt-4 text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div>
+                            <span class="text-slate-400 block">น้ำหนัก</span>
+                            <span class="font-bold text-slate-700 text-sm">@item.Weight กก.</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">โรงเรือน</span>
+                            <span class="font-bold text-slate-700 text-sm">@item.PenNumber</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-slate-400 block">ประเมินมูลค่า</span>
+                        <span class="text-lg font-bold text-emerald-700">@string.Format("{0:N0}", item.EstimatedValue) ฿</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="p-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-sm font-medium transition" title="รายละเอียด">
+                            👁️ ดูข้อมูล
+                        </a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="p-2 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg text-sm font-medium transition" title="แก้ไข">
+                            ✏️
+                        </a>
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบสัตว์เลี้ยงตัวนี้?');" class="inline">
+                            <button type="submit" class="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg text-sm font-medium transition" title="ลบ">
+                                🗑️
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
