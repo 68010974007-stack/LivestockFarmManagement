@@ -23,15 +23,17 @@ namespace LivestockFarmManagement.Controllers
             ViewBag.TotalBreeding = _context.BreedingRecords.Count();
             ViewBag.TotalVaccines = _context.VaccineRecords.Count();
 
-            // คำนวณรายรับรวม
+            // คำนวณรายรับรวม (ใช้ AsEnumerable เพื่อคำนวณบน Memory ป้องกัน SQLite Query Error)
             ViewBag.TotalIncome = _context.FinancialTransactions
+                .AsEnumerable()
                 .Where(t => t.TransactionType == "INCOME" || t.TransactionType == "รายรับ")
-                .Sum(t => (decimal?)t.Amount) ?? 0;
+                .Sum(t => t.Amount);
 
-            // คำนวณรายจ่ายรวม
+            // คำนวณรายจ่ายรวม (ใช้ AsEnumerable เพื่อคำนวณบน Memory ป้องกัน SQLite Query Error)
             ViewBag.TotalExpense = _context.FinancialTransactions
+                .AsEnumerable()
                 .Where(t => t.TransactionType == "EXPENSE" || t.TransactionType == "รายจ่าย")
-                .Sum(t => (decimal?)t.Amount) ?? 0;
+                .Sum(t => t.Amount);
 
             return View();
         }
